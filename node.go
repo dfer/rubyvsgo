@@ -24,13 +24,19 @@ func node1 (text string) int64 {
 	return value % 8
 }
 
-// Этот вариант примерно на 30% быстрее
+// Этот вариант примерно на 30% быстрее node1
 // Благодаря отказу от лишнего преобразования из одной системы счисления в другую
 func node2 (text string) int64 {
 	h := sha1.New()
 	h.Write([]byte(text))
 	mas := h.Sum(nil) // "hello world" -> [42 174 108 53 201 79 207 180 21 219 233 95 64 139 156 233 30 232 70 237]
 	return int64(mas[len(mas)-1]) % 8 // Берем последний элемент массива. Это целое десятичное число. И считаем остаток от деления на 8
+}
+
+// Самый быстрый вариант
+func node3 (text string) int64 {
+	mas := sha1.Sum([]byte(text))
+	return int64(mas[len(mas)-1]) % 8
 }
 
 func main() {
@@ -68,4 +74,17 @@ func main() {
 	delta = date_to - date_from
 	
 	fmt.Println("node2: ", delta)
+	
+	// -------- node v3 -----------
+	date_from = time.Now().UnixNano()
+	
+	for i := 1; i <= 1000000; i++ {
+		node3("user:"+string(i))	
+	}
+	
+	date_to = time.Now().UnixNano()
+	
+	delta = date_to - date_from
+	
+	fmt.Println("node3: ", delta)
 }

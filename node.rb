@@ -18,6 +18,17 @@ def node11(text)
 	return ('0x'+s[s.size-1, 1]).hex % 8
 end
 
+# Самый быстрый вариант
+def node2(text)
+	return Digest::SHA1.digest(text)[-1].ord & 0x7
+end
+
+# Чуть-чуть уступает варианту node2
+def node3(text)
+	return Digest::SHA1.digest(text)[-1].ord % 8 
+end
+
+# Тестирование скорости работы
 # ---------- node v0 -----------------
 date_from = Time.now.to_f
 for i in 1..1000000 do 
@@ -49,4 +60,26 @@ date_to = Time.now.to_f
 
 delta = date_to - date_from
 
-puts 'node1:'+delta.to_s
+puts 'node11:'+delta.to_s
+
+# ---------- node v2 -----------------
+date_from = Time.now.to_f
+for i in 1..1000000 do 
+	node2("user:"+i.to_s)
+end
+date_to = Time.now.to_f
+
+delta = date_to - date_from
+
+puts 'node2:'+delta.to_s
+
+# ---------- node v3 -----------------
+date_from = Time.now.to_f
+for i in 1..1000000 do 
+	node3("user:"+i.to_s)
+end
+date_to = Time.now.to_f
+
+delta = date_to - date_from
+
+puts 'node3:'+delta.to_s
